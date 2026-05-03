@@ -35,5 +35,6 @@
     "api/subscribe.js": {
       "maxDuration": 10
     }
-  }
+  },
+  "nudge": "2026-05-03T16:21"
 }
