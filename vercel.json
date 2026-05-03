@@ -26,6 +26,10 @@
       ]
     }
   ],
+  "redirects": [
+    { "source": "/lecture", "destination": "/professional-drift/", "permanent": true },
+    { "source": "/the-lecture", "destination": "/professional-drift/", "permanent": true }
+  ],
   "rewrites": [],
   "functions": {
     "api/subscribe.js": {

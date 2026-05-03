@@ -69,65 +69,17 @@
 
         .drift-stage.dark { mix-blend-mode: screen; }
 
-        .fog-blob {
-            position: absolute;
-            width: 70vmax;
-            height: 70vmax;
-            border-radius: 50%;
-            opacity: 0.55;
-            filter: blur(56px);
-            will-change: transform;
-        }
+        .fog-blob { position: absolute; width: 75vmax; height: 75vmax; border-radius: 50%; opacity: 0; filter: blur(65px); will-change: transform, opacity; animation-fill-mode: both; }
 
-        /* Light mode fog (default) — soft cream tones over bone */
-        .fog-1 {
-            background: radial-gradient(circle at 50% 50%, rgba(196,164,132,0.55), rgba(196,164,132,0) 60%);
-            top: -20vmax; left: -25vmax;
-            animation: drift-a 48s ease-in-out infinite alternate;
-        }
-        .fog-2 {
-            background: radial-gradient(circle at 50% 50%, rgba(232,226,213,0.85), rgba(232,226,213,0) 65%);
-            top: 10vmax; right: -30vmax;
-            animation: drift-b 67s ease-in-out infinite alternate;
-        }
-        .fog-3 {
-            background: radial-gradient(circle at 50% 50%, rgba(166,139,111,0.30), rgba(166,139,111,0) 70%);
-            bottom: -25vmax; left: 10vmax;
-            animation: drift-c 53s ease-in-out infinite alternate;
-        }
-        .fog-4 {
-            background: radial-gradient(circle at 50% 50%, rgba(245,241,232,0.75), rgba(245,241,232,0) 68%);
-            top: 35vmax; left: 25vmax;
-            width: 50vmax; height: 50vmax;
-            animation: drift-d 39s ease-in-out infinite alternate;
-        }
+        .fog-1 { background: radial-gradient(circle, rgba(196,164,132,0.45), transparent 60%); top: -15vmax; left: -20vmax; animation: drift-a 35s ease-in-out infinite alternate, breathe-opacity 12s ease-in-out infinite alternate; }
+        .fog-2 { background: radial-gradient(circle, rgba(232,226,213,0.7), transparent 65%); top: 5vmax; right: -25vmax; animation: drift-b 42s ease-in-out infinite alternate, breathe-opacity 15s ease-in-out infinite alternate 2s; }
+        .fog-3 { background: radial-gradient(circle, rgba(166,139,111,0.25), transparent 70%); bottom: -20vmax; left: 5vmax; animation: drift-c 38s ease-in-out infinite alternate, breathe-opacity 18s ease-in-out infinite alternate 4s; }
+        .fog-4 { background: radial-gradient(circle, rgba(196,164,132,0.15), transparent 60%); bottom: 10vmax; right: 10vmax; animation: drift-a 50s ease-in-out infinite alternate-reverse, breathe-opacity 20s ease-in-out infinite alternate 1s; }
 
-        /* Dark hero/close — same blobs but luminous */
-        .dark .fog-1 { background: radial-gradient(circle at 50% 50%, rgba(196,164,132,0.45), transparent 60%); }
-        .dark .fog-2 { background: radial-gradient(circle at 50% 50%, rgba(120,100,80,0.55), transparent 65%); }
-        .dark .fog-3 { background: radial-gradient(circle at 50% 50%, rgba(220,200,170,0.25), transparent 70%); }
-        .dark .fog-4 { background: radial-gradient(circle at 50% 50%, rgba(80,70,60,0.6), transparent 68%); }
-
-        @keyframes drift-a {
-            0%   { transform: translate(0,0) scale(1) rotate(0deg); }
-            50%  { transform: translate(18vw, 12vh) scale(1.25) rotate(8deg); }
-            100% { transform: translate(-8vw, 20vh) scale(0.95) rotate(-6deg); }
-        }
-        @keyframes drift-b {
-            0%   { transform: translate(0,0) scale(1.1) rotate(0deg); }
-            50%  { transform: translate(-22vw, 18vh) scale(0.85) rotate(-12deg); }
-            100% { transform: translate(8vw, -10vh) scale(1.2) rotate(6deg); }
-        }
-        @keyframes drift-c {
-            0%   { transform: translate(0,0) scale(0.9) rotate(0deg); }
-            50%  { transform: translate(15vw, -18vh) scale(1.15) rotate(10deg); }
-            100% { transform: translate(-12vw, 5vh) scale(1.05) rotate(-8deg); }
-        }
-        @keyframes drift-d {
-            0%   { transform: translate(0,0) scale(1) rotate(0deg); }
-            50%  { transform: translate(-20vw, -15vh) scale(0.8) rotate(-5deg); }
-            100% { transform: translate(12vw, 8vh) scale(1.3) rotate(8deg); }
-        }
+        @keyframes drift-a { 0% { transform: translate(0,0) scale(1) rotate(0deg); } 100% { transform: translate(-10vw, 15vh) scale(1.1) rotate(15deg); } }
+        @keyframes drift-b { 0% { transform: translate(0,0) scale(1.1) rotate(0deg); } 100% { transform: translate(12vw, -12vh) scale(0.9) rotate(-10deg); } }
+        @keyframes drift-c { 0% { transform: translate(0,0) scale(0.95) rotate(0deg); } 100% { transform: translate(-8vw, -8vh) scale(1.15) rotate(20deg); } }
+        @keyframes breathe-opacity { 0%, 100% { opacity: 0.35; } 50% { opacity: 0.65; } }
 
         /* ─── GRAIN OVERLAY ──────────────────────────────────────────
            Fixed full-screen, top z-index, pointer-events none. Adds
@@ -847,6 +799,31 @@
             <div class="scroll-cue"></div>
         </div>
     </header>
+    <!-- ════════════════════════════════════════════════════════════
+         TRAILER — THE ATMOSPHERE
+    ════════════════════════════════════════════════════════════ -->
+    <section class="relative py-32 overflow-hidden section-dark">
+        <div class="drift-stage dark" aria-hidden="true">
+            <div class="fog-blob fog-1"></div>
+            <div class="fog-blob fog-4"></div>
+        </div>
+
+        <div class="relative z-10 max-w-5xl mx-auto px-8">
+            <div class="glass p-4 rounded-[2.5rem] shadow-2xl overflow-hidden bg-ink/20">
+                <div class="aspect-video relative rounded-[2rem] overflow-hidden bg-black shadow-inner">
+                    <video 
+                        controls 
+                        class="w-full h-full object-cover"
+                        poster="/trailer-poster.jpg">
+                        <source src="/trailer.mp4" type="video/mp4">
+                    </video>
+                </div>
+            </div>
+            <div class="mt-12 text-center">
+                <p class="text-bone/40 text-[12px] uppercase tracking-[0.6em] font-bold">The Official Trailer</p>
+            </div>
+        </div>
+    </section>
 
     <!-- ════════════════════════════════════════════════════════════
          01 — THE DEFINITION
