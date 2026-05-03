@@ -1,0 +1,9 @@
+{
+  "name": "walkertalks-io",
+  "private": true,
+  "version": "1.0.0",
+  "description": "WalkerTalks — Lecture platform by Tristian Walker",
+  "scripts": {
+    "start": "npx serve . -l 8080"
+  }
+}

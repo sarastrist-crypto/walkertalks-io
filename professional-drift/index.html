@@ -1,0 +1,1460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Drift | The Quiet Line</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&family=Anton&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;0,9..144,900;1,9..144,300;1,9..144,700;1,9..144,900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: { DEFAULT: '#C4A484', hover: '#A68B6F', foreground: '#FFFFFF' },
+                        ink: '#0F0E0D',
+                        bone: '#F5F1E8',
+                        parchment: '#FDFCF8',
+                        mist: '#E8E2D5'
+                    },
+                    fontFamily: {
+                        heading: ['Fraunces', 'Playfair Display', 'serif'],
+                        display: ['Anton', 'Impact', 'sans-serif'],
+                        body: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* ─── BASE ─────────────────────────────────────────────────── */
+        :root {
+            --ink: #0F0E0D;
+            --bone: #F5F1E8;
+            --parchment: #FDFCF8;
+            --primary: #C4A484;
+            --mist: #E8E2D5;
+        }
+
+        * { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+
+        html, body { background-color: var(--bone); }
+        body {
+            scroll-behavior: smooth;
+            color: #1A1817;
+            overflow-x: hidden;
+            font-family: 'Inter', sans-serif;
+            font-feature-settings: 'ss01', 'cv11';
+        }
+
+        ::selection { background: var(--ink); color: var(--bone); }
+
+        /* ─── DRIFT BACKGROUND SYSTEM ─────────────────────────────────
+           Three layers: deep fog (slow, massive), mid mist (medium),
+           and a foreground wisp filter that distorts everything.
+           Combined with a fixed grain overlay → "dreamy noise" base.
+        ──────────────────────────────────────────────────────────── */
+        .drift-stage {
+            position: fixed;
+            inset: -10vmax;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+            contain: layout paint;
+            /* Wisp turbulence filter removed for perf; CSS-only drift remains. */
+        }
+
+        .drift-stage.dark { mix-blend-mode: screen; }
+
+        .fog-blob {
+            position: absolute;
+            width: 70vmax;
+            height: 70vmax;
+            border-radius: 50%;
+            opacity: 0.55;
+            filter: blur(56px);
+            will-change: transform;
+        }
+
+        /* Light mode fog (default) — soft cream tones over bone */
+        .fog-1 {
+            background: radial-gradient(circle at 50% 50%, rgba(196,164,132,0.55), rgba(196,164,132,0) 60%);
+            top: -20vmax; left: -25vmax;
+            animation: drift-a 48s ease-in-out infinite alternate;
+        }
+        .fog-2 {
+            background: radial-gradient(circle at 50% 50%, rgba(232,226,213,0.85), rgba(232,226,213,0) 65%);
+            top: 10vmax; right: -30vmax;
+            animation: drift-b 67s ease-in-out infinite alternate;
+        }
+        .fog-3 {
+            background: radial-gradient(circle at 50% 50%, rgba(166,139,111,0.30), rgba(166,139,111,0) 70%);
+            bottom: -25vmax; left: 10vmax;
+            animation: drift-c 53s ease-in-out infinite alternate;
+        }
+        .fog-4 {
+            background: radial-gradient(circle at 50% 50%, rgba(245,241,232,0.75), rgba(245,241,232,0) 68%);
+            top: 35vmax; left: 25vmax;
+            width: 50vmax; height: 50vmax;
+            animation: drift-d 39s ease-in-out infinite alternate;
+        }
+
+        /* Dark hero/close — same blobs but luminous */
+        .dark .fog-1 { background: radial-gradient(circle at 50% 50%, rgba(196,164,132,0.45), transparent 60%); }
+        .dark .fog-2 { background: radial-gradient(circle at 50% 50%, rgba(120,100,80,0.55), transparent 65%); }
+        .dark .fog-3 { background: radial-gradient(circle at 50% 50%, rgba(220,200,170,0.25), transparent 70%); }
+        .dark .fog-4 { background: radial-gradient(circle at 50% 50%, rgba(80,70,60,0.6), transparent 68%); }
+
+        @keyframes drift-a {
+            0%   { transform: translate(0,0) scale(1) rotate(0deg); }
+            50%  { transform: translate(18vw, 12vh) scale(1.25) rotate(8deg); }
+            100% { transform: translate(-8vw, 20vh) scale(0.95) rotate(-6deg); }
+        }
+        @keyframes drift-b {
+            0%   { transform: translate(0,0) scale(1.1) rotate(0deg); }
+            50%  { transform: translate(-22vw, 18vh) scale(0.85) rotate(-12deg); }
+            100% { transform: translate(8vw, -10vh) scale(1.2) rotate(6deg); }
+        }
+        @keyframes drift-c {
+            0%   { transform: translate(0,0) scale(0.9) rotate(0deg); }
+            50%  { transform: translate(15vw, -18vh) scale(1.15) rotate(10deg); }
+            100% { transform: translate(-12vw, 5vh) scale(1.05) rotate(-8deg); }
+        }
+        @keyframes drift-d {
+            0%   { transform: translate(0,0) scale(1) rotate(0deg); }
+            50%  { transform: translate(-20vw, -15vh) scale(0.8) rotate(-5deg); }
+            100% { transform: translate(12vw, 8vh) scale(1.3) rotate(8deg); }
+        }
+
+        /* ─── GRAIN OVERLAY ──────────────────────────────────────────
+           Fixed full-screen, top z-index, pointer-events none. Adds
+           the photographic "dreamy noise" texture across everything.
+        ──────────────────────────────────────────────────────────── */
+        .grain {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            pointer-events: none;
+            opacity: 0.18;
+            mix-blend-mode: overlay;
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+            background-size: 240px 240px;
+            animation: grain-shift 8s steps(8) infinite;
+        }
+        @keyframes grain-shift {
+            0%   { transform: translate(0,0); }
+            12%  { transform: translate(-3%, 1%); }
+            25%  { transform: translate(2%, -2%); }
+            37%  { transform: translate(-1%, 3%); }
+            50%  { transform: translate(3%, 0); }
+            62%  { transform: translate(-2%, -3%); }
+            75%  { transform: translate(0, 2%); }
+            87%  { transform: translate(2%, -1%); }
+            100% { transform: translate(0,0); }
+        }
+
+        /* ─── KINETIC TYPE ───────────────────────────────────────────
+           Massive headlines that breathe — subtle scale + skew
+           oscillation tied to the same rhythm as the fog.
+        ──────────────────────────────────────────────────────────── */
+        .kinetic {
+            display: inline-block;
+            animation: breathe 14s ease-in-out infinite;
+            transform-origin: center;
+        }
+        @keyframes breathe {
+            0%, 100% { transform: scale(1) translateY(0); letter-spacing: -0.04em; }
+            50%      { transform: scale(1.012) translateY(-0.4vh); letter-spacing: -0.038em; }
+        }
+
+        /* Outline-display style for hero — bold sans w/ subtle ghost shadow */
+        .ghost-fill {
+            background: linear-gradient(180deg, rgba(245,241,232,1) 0%, rgba(245,241,232,0.4) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 60px rgba(196,164,132,0.25);
+        }
+
+        /* ─── CELLS: emerge-from-mist with spring + halo, then drift ─
+           Each cell starts deep in fog (heavy blur, scaled down,
+           translated down). On scroll-in: a back-out spring snaps it
+           into place while a brief radial-tan halo pulses out behind
+           it (the mist dissipating). Then it settles into the slow
+           float-a/b/c idle drift.
+        ──────────────────────────────────────────────────────────── */
+        .cell {
+            position: relative;
+            opacity: 0;
+            transform: translateY(48px) scale(0.94);
+            filter: blur(24px);
+            transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1),
+                        transform 0.95s cubic-bezier(0.34, 1.56, 0.64, 1),
+                        filter 0.7s ease-out;
+            will-change: transform, opacity, filter;
+        }
+        .cell.in {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            filter: blur(0);
+        }
+        /* Mist halo — brief radial-tan glow that pulses out as the
+           cell resolves. Pure CSS pseudo, no DOM noise. */
+        .cell::before {
+            content: '';
+            position: absolute;
+            inset: -24px;
+            background: radial-gradient(circle, rgba(196,164,132,0.45) 0%, rgba(196,164,132,0.15) 35%, transparent 65%);
+            opacity: 0;
+            pointer-events: none;
+            border-radius: 50%;
+            z-index: -1;
+            filter: blur(28px);
+            transform: scale(0.7);
+        }
+        .cell.in::before {
+            animation: cell-mist-emerge 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+        @keyframes cell-mist-emerge {
+            0%   { opacity: 0;    transform: scale(0.7); }
+            35%  { opacity: 0.85; transform: scale(1.15); }
+            100% { opacity: 0;    transform: scale(1.45); }
+        }
+        .cell.in.float-a { animation: float-a 12s ease-in-out infinite alternate 1.0s; }
+        .cell.in.float-b { animation: float-b 16s ease-in-out infinite alternate 1.0s; }
+        .cell.in.float-c { animation: float-c 14s ease-in-out infinite alternate 1.0s; }
+
+        @keyframes float-a {
+            from { transform: translate(0, 0) rotate(-0.15deg); }
+            to   { transform: translate(-6px, -8px) rotate(0.2deg); }
+        }
+        @keyframes float-b {
+            from { transform: translate(0, 0) rotate(0.1deg); }
+            to   { transform: translate(8px, -10px) rotate(-0.15deg); }
+        }
+        @keyframes float-c {
+            from { transform: translate(0, 0) rotate(-0.1deg); }
+            to   { transform: translate(4px, -6px) rotate(0.18deg); }
+        }
+
+        /* Cell glass treatment — light mode */
+        .glass {
+            background: rgba(253, 252, 248, 0.55);
+            backdrop-filter: blur(20px) saturate(1.1);
+            -webkit-backdrop-filter: blur(20px) saturate(1.1);
+            border: 1px solid rgba(15, 14, 13, 0.06);
+            box-shadow: 0 30px 80px -30px rgba(15, 14, 13, 0.15),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+        }
+        .glass:hover {
+            border-color: rgba(196, 164, 132, 0.4);
+            box-shadow: 0 40px 100px -30px rgba(196, 164, 132, 0.35),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+        }
+
+        .glass-dark {
+            background: rgba(15, 14, 13, 0.55);
+            backdrop-filter: blur(24px) saturate(1.2);
+            -webkit-backdrop-filter: blur(24px) saturate(1.2);
+            border: 1px solid rgba(196, 164, 132, 0.18);
+            box-shadow: 0 40px 100px -30px rgba(0, 0, 0, 0.6),
+                        inset 0 1px 0 rgba(196, 164, 132, 0.15);
+        }
+
+        /* ─── NAV ──────────────────────────────────────────────────── */
+        #mainNav { transition: background 0.6s ease, border 0.6s ease, backdrop-filter 0.6s ease; }
+        .nav-scrolled {
+            background: rgba(245, 241, 232, 0.78);
+            backdrop-filter: blur(20px) saturate(1.2);
+            -webkit-backdrop-filter: blur(20px) saturate(1.2);
+            border-bottom: 1px solid rgba(15, 14, 13, 0.06);
+        }
+        .logo-text { font-family: 'Fraunces', serif; font-feature-settings: 'ss01'; }
+
+        /* ─── HERO BUTTON  ─────────────────────────────────────────── */
+        .available-now-btn {
+            background: linear-gradient(135deg, #C4A484 0%, #A68B6F 100%);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+                        box-shadow 0.6s ease;
+        }
+        .available-now-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, transparent 50%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        .available-now-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 30px 60px -20px rgba(196, 164, 132, 0.6);
+        }
+        .available-now-btn:hover::before { opacity: 1; }
+
+        /* ─── INPUT  ───────────────────────────────────────────────── */
+        .lead-input {
+            background: rgba(15, 14, 13, 0.4);
+            border: 1px solid rgba(245, 241, 232, 0.15);
+            transition: all 0.5s ease;
+            color: #F5F1E8;
+        }
+        .lead-input::placeholder { color: rgba(245, 241, 232, 0.5); }
+        .lead-input:focus {
+            background: rgba(15, 14, 13, 0.6);
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(196,164,132,0.12);
+        }
+
+        /* ─── AUDIO BAR  ───────────────────────────────────────────── */
+        .audio-bar {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 480px;
+            z-index: 90;
+            background: rgba(15, 14, 13, 0.85);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(196, 164, 132, 0.25);
+            border-radius: 100px;
+            padding: 0.6rem 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.4),
+                        inset 0 1px 0 rgba(196,164,132,0.2);
+        }
+
+        /* ─── FORM SUCCESS  ────────────────────────────────────────── */
+        .form-success { text-align: center; padding: 1rem 0; }
+        .form-success p {
+            color: var(--primary);
+            font-size: 12px;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+        .btn-loading { opacity: 0.6; pointer-events: none; cursor: not-allowed; }
+
+        /* ─── DECORATIVE LINE ─────────────────────────────────────── */
+        .hairline {
+            display: inline-block;
+            width: 4rem;
+            height: 1px;
+            background: var(--primary);
+            vertical-align: middle;
+            opacity: 0.6;
+        }
+
+        /* ─── SECTION DIVIDER (drift band) ─────────────────────────── */
+        .drift-band {
+            position: relative;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(196,164,132,0.5), transparent);
+        }
+
+        /* ─── DRIFT WORD — letters shift very subtly ──────────────── */
+        .drift-word { display: inline-flex; }
+        .drift-word span {
+            display: inline-block;
+            animation: letter-drift 6s ease-in-out infinite;
+        }
+        .drift-word span:nth-child(2) { animation-delay: -0.5s; }
+        .drift-word span:nth-child(3) { animation-delay: -1s; }
+        .drift-word span:nth-child(4) { animation-delay: -1.5s; }
+        .drift-word span:nth-child(5) { animation-delay: -2s; }
+        .drift-word span:nth-child(6) { animation-delay: -2.5s; }
+        .drift-word span:nth-child(7) { animation-delay: -3s; }
+        .drift-word span:nth-child(8) { animation-delay: -3.5s; }
+        .drift-word span:nth-child(9) { animation-delay: -4s; }
+        @keyframes letter-drift {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-0.06em); }
+        }
+
+        /* ─── HERO TYPOGRAPHY  ─────────────────────────────────────── */
+        .hero-display {
+            font-family: 'Anton', 'Impact', sans-serif;
+            font-weight: 400;
+            letter-spacing: -0.02em;
+            line-height: 0.85;
+            text-transform: uppercase;
+        }
+        .hero-serif {
+            font-family: 'Fraunces', 'Playfair Display', serif;
+            font-style: italic;
+            font-weight: 300;
+            font-feature-settings: 'ss01';
+            letter-spacing: -0.03em;
+        }
+
+        /* ─── SCROLL CUE  ──────────────────────────────────────────── */
+        .scroll-cue {
+            width: 1px;
+            height: 60px;
+            background: linear-gradient(180deg, rgba(196,164,132,0.6), transparent);
+            position: relative;
+        }
+        .scroll-cue::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -1px;
+            width: 3px;
+            height: 12px;
+            background: var(--primary);
+            animation: scroll-pulse 2.4s ease-in-out infinite;
+        }
+        @keyframes scroll-pulse {
+            0% { top: 0; opacity: 1; }
+            70% { top: 48px; opacity: 0; }
+            100% { top: 0; opacity: 0; }
+        }
+
+        /* ─── DEFINITION QUOTE ─────────────────────────────────────── */
+        .pull-quote {
+            font-family: 'Fraunces', serif;
+            font-style: italic;
+            font-weight: 300;
+            font-size: clamp(1.6rem, 3vw, 2.4rem);
+            line-height: 1.25;
+            letter-spacing: -0.02em;
+        }
+
+        /* ─── SIGNAL CARDS — vertical stripe accent  ───────────────── */
+        .signal-card {
+            position: relative;
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+                        box-shadow 0.6s ease;
+        }
+        .signal-card::before {
+            content: '';
+            position: absolute;
+            top: 1.5rem; left: 0;
+            width: 2px;
+            height: 1.5rem;
+            background: var(--primary);
+            opacity: 0.4;
+            transition: height 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+        }
+        .signal-card:hover::before { height: calc(100% - 3rem); opacity: 1; }
+        .signal-card:hover { transform: translateY(-8px); }
+
+        /* ─── DOMAIN CHIPS ─────────────────────────────────────────── */
+        .domain-chip {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .domain-chip::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(196,164,132,0.18), transparent 50%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        .domain-chip:hover::after { opacity: 1; }
+        .domain-chip:hover { border-color: rgba(196,164,132,0.5); transform: translateY(-4px); }
+
+        /* ─── CURSOR PERTURBATION (mouse follower)  ────────────────── */
+        .cursor-fog {
+            position: fixed;
+            top: 0; left: 0;
+            width: 600px; height: 600px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(196,164,132,0.15), transparent 60%);
+            pointer-events: none;
+            z-index: 1;
+            transform: translate(-50%, -50%);
+            mix-blend-mode: screen;
+            transition: opacity 0.6s ease;
+            opacity: 0;
+            filter: blur(40px);
+        }
+        body.has-cursor .cursor-fog { opacity: 1; }
+
+        /* ─── PERF: defer paint of below-fold sections ──────────────── */
+        section { content-visibility: auto; contain-intrinsic-size: 1px 800px; }
+
+        /* ─── NOW-PLAYING STAGE (sits above the audio ribbon) ───────
+           Only visible while audio is playing. Inside the small frame:
+           drift fog + grain + serif italic captions populating in
+           sync with the V.O. timeline. Single artifact UX preserved
+           (one ribbon at the bottom; this stage is its visual half,
+           it disappears when paused or ended).
+        ──────────────────────────────────────────────────────────── */
+        .np-stage {
+            position: fixed;
+            bottom: 4.75rem;
+            left: 50%;
+            width: 92%;
+            max-width: 540px;
+            height: 132px;
+            z-index: 89;
+            border-radius: 16px;
+            overflow: hidden;
+            background: #0F0E0D;
+            border: 1px solid rgba(196,164,132,0.32);
+            box-shadow: 0 30px 70px -20px rgba(0,0,0,0.6),
+                        inset 0 1px 0 rgba(196,164,132,0.18);
+            opacity: 0;
+            pointer-events: none;
+            transform: translate(-50%, 12px) scale(0.97);
+            transition: opacity 0.55s ease,
+                        transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            contain: layout paint;
+        }
+        .np-stage.show {
+            opacity: 1;
+            transform: translate(-50%, 0) scale(1);
+        }
+
+        .np-fog {
+            position: absolute; inset: -25%;
+            filter: blur(40px);
+            opacity: 0.85;
+        }
+        .np-fog::before, .np-fog::after {
+            content: ''; position: absolute; border-radius: 50%;
+            width: 75%; height: 75%;
+        }
+        .np-fog::before {
+            background: radial-gradient(circle, rgba(196,164,132,0.85), transparent 60%);
+            top: -12%; left: -12%;
+            animation: drift-a 24s ease-in-out infinite alternate;
+        }
+        .np-fog::after {
+            background: radial-gradient(circle, rgba(120,100,80,0.65), transparent 60%);
+            bottom: -12%; right: -12%;
+            animation: drift-b 30s ease-in-out infinite alternate;
+        }
+
+        .np-cap {
+            position: absolute; inset: 0;
+            display: flex; align-items: center; justify-content: center;
+            padding: 1rem 1.5rem;
+            text-align: center;
+            font-family: 'Fraunces', serif;
+            font-style: italic;
+            font-weight: 300;
+            color: #F5F1E8;
+            font-size: clamp(0.95rem, 1.5vw, 1.15rem);
+            line-height: 1.25;
+            letter-spacing: -0.01em;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+            text-shadow: 0 2px 16px rgba(15,14,13,0.7);
+        }
+        .np-cap.show { opacity: 1; transform: translateY(0); }
+        .np-cap em { color: #C4A484; font-style: italic; }
+
+        .np-title {
+            position: absolute; inset: 0;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            padding: 0.5rem;
+            opacity: 0;
+            transition: opacity 0.6s ease;
+        }
+        .np-title.show { opacity: 1; }
+        .np-title .display {
+            font-family: 'Anton', sans-serif;
+            text-transform: uppercase;
+            color: #F5F1E8;
+            font-size: clamp(1.5rem, 3.6vw, 2.25rem);
+            letter-spacing: -0.02em;
+            line-height: 0.9;
+        }
+        .np-title .serif {
+            font-family: 'Fraunces', serif;
+            font-style: italic; font-weight: 300;
+            color: #C4A484;
+            margin-top: 0.35rem;
+            font-size: clamp(0.95rem, 1.8vw, 1.2rem);
+            letter-spacing: -0.02em;
+        }
+        .np-title .byline {
+            margin-top: 0.55rem;
+            font-family: 'Inter', sans-serif;
+            font-size: clamp(8px, 1vw, 10px);
+            font-weight: 700;
+            letter-spacing: 0.4em;
+            text-transform: uppercase;
+            color: rgba(245,241,232,0.55);
+        }
+
+        @media (max-width: 768px) {
+            .np-stage { height: 110px; bottom: 4rem; max-width: calc(100% - 1rem); border-radius: 14px; }
+            .np-cap { font-size: 0.92rem; padding: 0.85rem 1rem; line-height: 1.2; }
+        }
+
+        /* ─── MOBILE NAV DRAWER ─────────────────────────────────────── */
+        .mobile-menu-toggle {
+            display: none;
+            width: 40px; height: 40px;
+            background: transparent;
+            border: 1px solid rgba(245,241,232,0.2);
+            border-radius: 8px;
+            color: #F5F1E8;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            cursor: pointer;
+            padding: 0;
+        }
+        .nav-scrolled .mobile-menu-toggle { color: #0F0E0D; border-color: rgba(15,14,13,0.18); }
+        .mobile-menu-toggle span {
+            display: block;
+            width: 18px;
+            height: 1.5px;
+            background: currentColor;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+        .mobile-menu-toggle.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+        .mobile-menu-toggle.open span:nth-child(2) { opacity: 0; }
+        .mobile-menu-toggle.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+        .mobile-menu {
+            position: fixed;
+            inset: 0;
+            background: rgba(15,14,13,0.97);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            z-index: 99;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+        .mobile-menu.show { opacity: 1; pointer-events: auto; }
+        .mobile-menu-inner { display: flex; flex-direction: column; gap: 1.5rem; text-align: center; }
+        .mobile-menu-inner a {
+            font-family: 'Fraunces', serif;
+            font-style: italic;
+            font-weight: 300;
+            font-size: 1.5rem;
+            letter-spacing: -0.02em;
+            color: #F5F1E8;
+            transition: color 0.3s ease;
+        }
+        .mobile-menu-inner a:hover { color: #C4A484; }
+        .mobile-menu-inner .nav-cta {
+            margin-top: 0.75rem;
+            padding: 1rem 2rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.7rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            font-weight: 700;
+            font-style: normal;
+        }
+
+        /* ─── REDUCE MOTION ─────────────────────────────────────────── */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+            .cell { opacity: 1; transform: none; filter: none; }
+        }
+
+        /* ─── MOBILE  ──────────────────────────────────────────────── */
+        @media (max-width: 768px) {
+            .hero-display { font-size: clamp(2.5rem, 11vw, 4.5rem) !important; }
+            .nav-links { display: none !important; }
+            .mobile-menu-toggle { display: flex !important; }
+            .fog-blob { width: 100vmax; height: 100vmax; opacity: 0.45; }
+            .cursor-fog { display: none; }
+            /* Disable expensive turbulence-displacement filter on mobile (battery) */
+            .drift-stage { filter: none; }
+            section, header { padding-top: 5rem; padding-bottom: 5rem; }
+            header { min-height: 100vh; }
+            .glass, .glass-dark { padding: 1.75rem !important; border-radius: 1.5rem !important; }
+            .audio-bar { bottom: 0.75rem; padding: 0.5rem 1rem; }
+            .pull-quote { font-size: clamp(1.2rem, 4vw, 1.8rem) !important; }
+        }
+
+        /* ─── SECTION ELEVATIONS ──────────────────────────────────── */
+        .section-light { background: var(--bone); }
+        .section-parchment { background: var(--parchment); }
+        .section-dark { background: #0F0E0D; color: var(--bone); }
+        .section-mist { background: var(--mist); }
+    </style>
+</head>
+<body class="font-body antialiased">
+
+    <!-- (Wisp turbulence filter removed — was page-wide compositing cost.) -->
+
+    <!-- ═══ GRAIN OVERLAY (top of stack, all sections) ═══ -->
+    <div class="grain" aria-hidden="true"></div>
+
+    <!-- ═══ CURSOR FOG ═══ -->
+    <div class="cursor-fog" id="cursorFog" aria-hidden="true"></div>
+
+    <!-- (Floating teaser PiP removed — narration now plays via the bottom audio ribbon.) -->
+
+    <!-- ═══ MOBILE MENU OVERLAY ═══ -->
+    <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+        <div class="mobile-menu-inner">
+            <a href="https://tristianwalker.com" target="_blank" style="color:#C4A484;">TristianWalker.com</a>
+            <a href="#definition">01 / Definition</a>
+            <a href="#audit">02 / Diagnosis</a>
+            <a href="#reframe">03 / Reframe</a>
+            <a href="https://thequietlinebook.com" target="_blank" class="available-now-btn nav-cta text-white">Buy The Book</a>
+        </div>
+    </div>
+
+    <!-- ═══ NOW-PLAYING STAGE (visible only while audio is playing) ═══ -->
+    <div class="np-stage" id="npStage" aria-hidden="true">
+        <div class="np-fog" aria-hidden="true"></div>
+        <div class="np-cap" data-cap="0"><span class="np-line">In every interaction, there is a <em>quiet line</em>.</span></div>
+        <div class="np-cap" data-cap="1"><span class="np-line">Between <em>presence</em> and <em>process</em>.</span></div>
+        <div class="np-cap" data-cap="2"><span class="np-line">When the task overrules the human, <em>character drifts</em>.</span></div>
+        <div class="np-cap" data-cap="3"><span class="np-line">Most never notice. <em>The few who do — take action.</em></span></div>
+        <div class="np-cap" data-cap="4"><span class="np-line">For those who've drifted — numb to <em>what could still be</em>.</span></div>
+        <div class="np-cap" data-cap="5"><span class="np-line"><em>Join me.</em> Explore the possibilities of you.</span></div>
+        <div class="np-title" data-cap="6">
+            <div class="display">Professional Drift</div>
+            <div class="serif">The Quiet Line.</div>
+            <div class="byline">A lecture by Tristian Walker</div>
+        </div>
+    </div>
+
+    <!-- ═══ FLOATING AUDIO BAR ═══ -->
+    <div class="audio-bar">
+        <div class="flex-shrink-0">
+            <button id="audioToggle" aria-label="Toggle audio brief" class="w-9 h-9 rounded-full bg-primary flex items-center justify-center text-white shadow-lg transition-transform hover:scale-110 active:scale-95">
+                <svg id="playIcon" class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.333-5.89a1.5 1.5 0 000-2.538L6.3 2.841z"/></svg>
+                <svg id="pauseIcon" class="w-4 h-4 hidden" fill="currentColor" viewBox="0 0 20 20"><path d="M5 4h3v12H5V4zm7 0h3v12h3V4z"/></svg>
+            </button>
+        </div>
+        <div class="flex-grow">
+            <div class="text-[11px] font-bold text-primary uppercase tracking-[0.32em] mb-1 flex items-center gap-3">
+                <span>Listen — The Author's Brief</span>
+                <span id="audioTimer" class="text-bone/45 font-medium tracking-[0.15em]">0:00 / 0:45</span>
+            </div>
+            <div class="h-[3px] bg-bone/10 rounded-full overflow-hidden">
+                <div id="audioProgress" class="h-full bg-primary w-0 transition-all duration-300"></div>
+            </div>
+        </div>
+        <audio id="mainAudio" src="/audio.mp3?v=6" preload="metadata"></audio>
+    </div>
+
+    <!-- ═══ NAVIGATION ═══ -->
+    <nav id="mainNav" class="fixed top-0 w-full z-50 px-8 py-5 flex justify-between items-center">
+        <a href="/" class="flex items-center gap-2 group">
+            <div id="logoContainer" class="logo-text font-bold text-bone" style="font-size: 1.05rem; letter-spacing: 0.005em;">
+                <span id="logoQuiet">The&nbsp;Quiet</span>&nbsp;<span class="text-primary italic font-normal">Line</span>
+            </div>
+        </a>
+        <div class="nav-links flex items-center gap-7 text-[12px] font-bold uppercase tracking-[0.32em] text-bone/60">
+            <a href="https://tristianwalker.com" target="_blank" class="text-primary hover:text-bone transition-colors">TristianWalker.com</a>
+            <a href="#definition" class="hover:text-bone transition-colors">01 / Definition</a>
+            <a href="#audit" class="hover:text-bone transition-colors">02 / Diagnosis</a>
+            <a href="#reframe" class="hover:text-bone transition-colors">03 / Reframe</a>
+            <a href="https://thequietlinebook.com" target="_blank" class="available-now-btn px-5 py-2.5 rounded text-white tracking-[0.2em] font-bold text-[12px]">Buy The Book</a>
+        </div>
+        <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Open menu" aria-expanded="false">
+            <span></span><span></span><span></span>
+        </button>
+    </nav>
+
+    <!-- ════════════════════════════════════════════════════════════
+         HERO — THE HOOK
+         Dark stage with luminous fog drifting across, massive Anton
+         display headline with serif italic emphasis. Lead capture
+         floats on a darkened glass card.
+    ════════════════════════════════════════════════════════════ -->
+    <header class="relative min-h-[110vh] flex items-center justify-center pt-24 pb-32 overflow-hidden section-dark">
+        <!-- Drift fog stage — luminous version -->
+        <div class="drift-stage dark" aria-hidden="true">
+            <div class="fog-blob fog-1"></div>
+            <div class="fog-blob fog-2"></div>
+            <div class="fog-blob fog-3"></div>
+            <div class="fog-blob fog-4"></div>
+        </div>
+
+        <div class="relative z-10 max-w-6xl px-8 text-center text-bone">
+
+            <div class="inline-flex items-center gap-3 mb-12 text-[12px] font-bold text-primary uppercase tracking-[0.55em]">
+                <span class="hairline"></span>
+                A Lecture by Tristian Walker
+                <span class="hairline"></span>
+            </div>
+
+            <h1 class="hero-display kinetic" style="font-size: clamp(3rem, 9.5vw, 7.5rem); line-height: 0.95; margin-bottom: 0.75rem;">
+                The Interaction
+            </h1>
+            <div class="text-primary" style="font-family:'Fraunces',serif;font-style:italic;font-weight:300;font-size: clamp(2.4rem, 7.5vw, 6rem); line-height: 1.05; letter-spacing: -0.025em; margin-bottom: 0.5rem; padding-bottom: 0.18em;">
+                Nobody Meant
+            </div>
+            <h1 class="hero-display" style="font-size: clamp(2.4rem, 7.5vw, 6rem); line-height: 0.95; margin-bottom: 3rem;">
+                <span class="ghost-fill">to Lose</span><span class="text-primary">.</span>
+            </h1>
+
+            <p class="hero-serif text-bone/70 max-w-3xl mx-auto mb-16 px-4" style="font-size: clamp(1.1rem, 1.6vw, 1.55rem); line-height: 1.5;">
+                In an industry built on care, the most dangerous drift happens between two people. When process overrules presence, we lose the foundation of our character.
+            </p>
+
+            <!-- Lead Capture -->
+            <div class="max-w-md mx-auto mb-14 cell" id="heroFormWrapper">
+                <form id="leadFormHero" class="flex gap-2">
+                    <input
+                        type="email"
+                        id="heroEmail"
+                        placeholder="Enter your email to join the residency"
+                        class="lead-input flex-grow px-5 py-4 rounded text-sm font-light"
+                        required>
+                    <button type="submit" id="heroSubmitBtn"
+                        class="bg-primary hover:bg-bone hover:text-ink text-white px-7 py-4 rounded font-bold text-xs tracking-[0.2em] uppercase transition-all shadow-2xl">
+                        Join
+                    </button>
+                </form>
+                <div class="mt-3 text-[11px] text-bone/40 uppercase tracking-[0.4em]">Lecture notes &nbsp;·&nbsp; Author briefings &nbsp;·&nbsp; No spam</div>
+            </div>
+
+            <!-- Three motifs -->
+            <div class="grid md:grid-cols-3 gap-3 max-w-4xl mx-auto mb-16 text-[12px] font-bold uppercase tracking-[0.32em]">
+                <div class="cell float-a glass-dark p-4 rounded text-primary">Transactional Service</div>
+                <div class="cell float-b glass-dark p-4 rounded text-primary">The Wall of Anonymity</div>
+                <div class="cell float-c glass-dark p-4 rounded text-primary">Standardized Presence</div>
+            </div>
+
+            <div class="flex flex-col md:flex-row items-center justify-center gap-8">
+                <a href="#definition" class="available-now-btn px-12 py-5 rounded-sm font-bold tracking-[0.2em] uppercase text-xs shadow-2xl text-white">
+                    Begin The Lecture
+                </a>
+                <a href="https://tristianwalker.com" target="_blank" class="text-bone/60 hover:text-primary transition-all text-[12px] uppercase tracking-[0.45em] font-bold">
+                    Visit TristianWalker.com →
+                </a>
+            </div>
+        </div>
+
+        <div class="absolute bottom-12 left-1/2 -translate-x-1/2 z-10">
+            <div class="scroll-cue"></div>
+        </div>
+    </header>
+
+    <!-- ════════════════════════════════════════════════════════════
+         01 — THE DEFINITION
+         Light parchment, fog drifts across. Three signal cells stack
+         vertically with a contrasting "Motion vs Movement" panel.
+    ════════════════════════════════════════════════════════════ -->
+    <section id="definition" class="relative py-40 overflow-hidden section-light">
+        <div class="drift-stage" aria-hidden="true">
+            <div class="fog-blob fog-1"></div>
+            <div class="fog-blob fog-2"></div>
+            <div class="fog-blob fog-3"></div>
+            <div class="fog-blob fog-4"></div>
+        </div>
+
+        <div class="relative z-10 max-w-7xl mx-auto px-8 grid md:grid-cols-2 gap-20 items-center">
+            <div class="cell">
+                <div class="mb-5 text-primary font-bold tracking-[0.45em] uppercase text-[12px]">
+                    <span class="hairline mr-3"></span> Segment 01 — The Foundation
+                </div>
+                <h2 class="hero-display text-ink" style="font-size: clamp(2.75rem, 6.5vw, 5.5rem); line-height: 0.95; margin-bottom: 0.4rem;">
+                    Character
+                </h2>
+                <div class="text-primary" style="font-family:'Fraunces',serif;font-style:italic;font-weight:300;font-size: clamp(2.4rem, 6vw, 5rem); line-height: 1.05; letter-spacing: -0.025em; padding-bottom: 0.18em; margin-bottom: 2.5rem;">
+                    at scale.
+                </div>
+                <p class="pull-quote text-ink mb-12">
+                    "Drift is what happens when you perform the task perfectly, but lose the human entirely."
+                </p>
+
+                <div class="space-y-5">
+                    <div class="cell signal-card glass pl-8 pr-8 py-7 rounded-2xl">
+                        <h4 class="font-bold text-ink uppercase tracking-[0.22em] text-[11px] mb-2">
+                            The Transactional Task
+                            <span class="text-primary font-medium opacity-60 ml-2">/ Reactive</span>
+                        </h4>
+                        <p class="text-[14px] text-ink/65 leading-relaxed font-light">When the "Job Description" becomes a psychological shield. You stop seeing the human struggle and start seeing the checklist. You are no longer serving; you are processing.</p>
+                    </div>
+                    <div class="cell signal-card glass pl-8 pr-8 py-7 rounded-2xl">
+                        <h4 class="font-bold text-ink uppercase tracking-[0.22em] text-[11px] mb-2">
+                            The Expertise Ego
+                            <span class="text-primary font-medium opacity-60 ml-2">/ Success Trap</span>
+                        </h4>
+                        <p class="text-[14px] text-ink/65 leading-relaxed font-light">You are celebrated for your efficiency and accuracy. But as your professional mastery grows, your capacity for hospitality atrophies. You are an expert and an island.</p>
+                    </div>
+                    <div class="cell signal-card glass pl-8 pr-8 py-7 rounded-2xl">
+                        <h4 class="font-bold text-ink uppercase tracking-[0.22em] text-[11px] mb-2">
+                            The Industry Noise
+                            <span class="text-primary font-medium opacity-60 ml-2">/ Systemic</span>
+                        </h4>
+                        <p class="text-[14px] text-ink/65 leading-relaxed font-light">The environment demands speed over resonance. Gradually, you stop fighting the "Broken System" and start mirroring its coldness.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Motion vs Movement -->
+            <div class="cell float-b glass rounded-[2.5rem] p-14 lg:p-16">
+                <div class="text-[12px] font-bold text-ink/40 uppercase tracking-[0.5em] mb-12 pb-3 border-b border-primary/15">
+                    The Surgical Distinction
+                </div>
+                <div class="flex items-center justify-around gap-6 mb-12">
+                    <div class="text-center">
+                        <div class="hero-display text-ink/15 line-through" style="font-size: clamp(2.5rem, 5vw, 4.5rem);">Motion</div>
+                        <div class="mt-5 text-[12px] text-ink/40 font-bold uppercase tracking-[0.4em]">Being Busy</div>
+                    </div>
+                    <div class="hero-serif text-primary opacity-50 text-2xl">vs</div>
+                    <div class="text-center">
+                        <div class="hero-display text-ink" style="font-size: clamp(2.5rem, 5vw, 4.5rem);">Movement</div>
+                        <div class="mt-5 text-[12px] text-primary font-bold uppercase tracking-[0.4em]">Being New</div>
+                    </div>
+                </div>
+                <div class="h-px w-full bg-primary/15 mb-10"></div>
+                <p class="text-center hero-serif text-ink/60 px-6" style="font-size: 1.05rem; line-height: 1.5;">
+                    Motion is when you are tired. Movement is when you are <em class="text-primary not-italic">somewhere new</em> at the end of it.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <div class="drift-band"></div>
+
+    <!-- ════════════════════════════════════════════════════════════
+         02 — THE DIAGNOSIS
+         Mist-toned section with five animated signal cards in a grid
+         + the dark "Human Audit" panel below.
+    ════════════════════════════════════════════════════════════ -->
+    <section id="audit" class="relative py-40 overflow-hidden section-mist">
+        <div class="drift-stage" aria-hidden="true">
+            <div class="fog-blob fog-1"></div>
+            <div class="fog-blob fog-2"></div>
+            <div class="fog-blob fog-3"></div>
+            <div class="fog-blob fog-4"></div>
+        </div>
+
+        <div class="relative z-10 max-w-7xl mx-auto px-8">
+            <div class="text-center mb-24 cell">
+                <div class="inline-flex items-center gap-3 mb-6 text-[12px] font-bold text-primary uppercase tracking-[0.55em]">
+                    <span class="hairline"></span>
+                    Segment 02 — The Diagnosis
+                    <span class="hairline"></span>
+                </div>
+                <h2 class="hero-display text-ink" style="font-size: clamp(2.75rem, 7.5vw, 6.5rem); line-height: 0.95; margin-bottom: 0.4rem;">
+                    The Wall of
+                </h2>
+                <div class="text-primary" style="font-family:'Fraunces',serif;font-style:italic;font-weight:300;font-size: clamp(2.5rem, 7vw, 6rem); line-height: 1.05; letter-spacing: -0.025em; padding-bottom: 0.18em; margin-bottom: 2rem;">
+                    anonymity.
+                </div>
+                <p class="pull-quote text-ink/55 max-w-2xl mx-auto">
+                    "You cannot course-correct a ghost in the interaction."
+                </p>
+            </div>
+
+            <!-- 5 signal cells -->
+            <div class="grid md:grid-cols-5 gap-5 mb-32">
+                <div class="cell float-a glass p-8 rounded-3xl">
+                    <div class="text-primary font-bold text-[11px] uppercase tracking-[0.3em] mb-7 pb-2 border-b border-primary/15">Signal 01</div>
+                    <h4 class="hero-display text-ink mb-3" style="font-size: 1.75rem; line-height: 1;">Transactional Talk</h4>
+                    <p class="text-[12.5px] text-ink/65 leading-relaxed font-light">Conversations become short-hand for tasks. You are speaking to a "ticket number" or a "role."</p>
+                </div>
+                <div class="cell float-b glass p-8 rounded-3xl">
+                    <div class="text-primary font-bold text-[11px] uppercase tracking-[0.3em] mb-7 pb-2 border-b border-primary/15">Signal 02</div>
+                    <h4 class="hero-display text-ink mb-3" style="font-size: 1.75rem; line-height: 1;">The Scripted Smile</h4>
+                    <p class="text-[12.5px] text-ink/65 leading-relaxed font-light">Hospitality becomes a protocol instead of a personality. Performing "service," but not "care."</p>
+                </div>
+                <div class="cell float-c glass p-8 rounded-3xl">
+                    <div class="text-primary font-bold text-[11px] uppercase tracking-[0.3em] mb-7 pb-2 border-b border-primary/15">Signal 03</div>
+                    <h4 class="hero-display text-ink mb-3" style="font-size: 1.75rem; line-height: 1;">Metric Inertia</h4>
+                    <p class="text-[12.5px] text-ink/65 leading-relaxed font-light">Efficiency is the only value measured. If you can't quantify it, the system ignores it.</p>
+                </div>
+                <div class="cell float-a glass p-8 rounded-3xl">
+                    <div class="text-primary font-bold text-[11px] uppercase tracking-[0.3em] mb-7 pb-2 border-b border-primary/15">Signal 04</div>
+                    <h4 class="hero-display text-ink mb-3" style="font-size: 1.75rem; line-height: 1;">Presence Burnout</h4>
+                    <p class="text-[12.5px] text-ink/65 leading-relaxed font-light">Being "fully there" becomes a cost you can no longer afford. You detach to preserve.</p>
+                </div>
+                <div class="cell float-b glass p-8 rounded-3xl">
+                    <div class="text-primary font-bold text-[11px] uppercase tracking-[0.3em] mb-7 pb-2 border-b border-primary/15">Signal 05</div>
+                    <h4 class="hero-display text-ink mb-3" style="font-size: 1.75rem; line-height: 1;">Character Decay</h4>
+                    <p class="text-[12.5px] text-ink/65 leading-relaxed font-light">Who you are at your best is no longer who you are at 3 PM on a Tuesday.</p>
+                </div>
+            </div>
+
+            <!-- Human Audit panel — dark glass over fog -->
+            <div class="cell glass-dark max-w-5xl mx-auto p-16 md:p-24 rounded-[3rem] relative overflow-hidden">
+                <div class="text-center mb-16">
+                    <div class="inline-flex items-center gap-3 mb-6 text-primary font-bold text-[12px] uppercase tracking-[0.55em]">
+                        <span class="hairline"></span>
+                        The Human Audit
+                        <span class="hairline"></span>
+                    </div>
+                    <h3 class="hero-serif text-bone mb-4" style="font-size: clamp(2rem, 4vw, 3.5rem); line-height: 1.15;">
+                        Hospitality is not an extra.
+                        <br/>
+                        <span class="text-primary">It is a foundation of character.</span>
+                    </h3>
+                </div>
+
+                <div class="space-y-12 max-w-3xl mx-auto">
+                    <div class="flex gap-10 items-start">
+                        <span class="hero-serif text-primary text-5xl flex-shrink-0">01</span>
+                        <p class="hero-serif text-bone/85 pt-3" style="font-size: clamp(1.1rem, 1.6vw, 1.5rem); line-height: 1.5;">
+                            Does the person I just served feel like a <span class="text-primary">priority</span> or a procedure?
+                        </p>
+                    </div>
+                    <div class="flex gap-10 items-start">
+                        <span class="hero-serif text-primary text-5xl flex-shrink-0">02</span>
+                        <p class="hero-serif text-bone/85 pt-3" style="font-size: clamp(1.1rem, 1.6vw, 1.5rem); line-height: 1.5;">
+                            Am I bringing my <span class="text-primary">character</span> to this role, or just my credentials?
+                        </p>
+                    </div>
+                    <div class="flex gap-10 items-start">
+                        <span class="hero-serif text-primary text-5xl flex-shrink-0">03</span>
+                        <p class="hero-serif text-bone/85 pt-3" style="font-size: clamp(1.1rem, 1.6vw, 1.5rem); line-height: 1.5;">
+                            Do people feel more <span class="text-primary">human</span> after interacting with me?
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="drift-band"></div>
+
+    <!-- ════════════════════════════════════════════════════════════
+         03 — THE REFRAME
+    ════════════════════════════════════════════════════════════ -->
+    <section id="reframe" class="relative py-40 overflow-hidden section-parchment">
+        <div class="drift-stage" aria-hidden="true">
+            <div class="fog-blob fog-1"></div>
+            <div class="fog-blob fog-2"></div>
+            <div class="fog-blob fog-3"></div>
+            <div class="fog-blob fog-4"></div>
+        </div>
+
+        <div class="relative z-10 max-w-7xl mx-auto px-8 grid md:grid-cols-2 gap-24 items-center">
+            <div class="cell">
+                <div class="inline-flex items-center gap-3 mb-8 text-[12px] font-bold text-primary uppercase tracking-[0.55em]">
+                    <span class="hairline"></span>
+                    Segment 03 — The Reframe
+                </div>
+                <h2 class="hero-display text-ink" style="font-size: clamp(2.75rem, 7vw, 6rem); line-height: 0.95; margin-bottom: 0.4rem;">
+                    The Foundation
+                </h2>
+                <div class="text-primary" style="font-family:'Fraunces',serif;font-style:italic;font-weight:300;font-size: clamp(2.4rem, 6.5vw, 5.5rem); line-height: 1.05; letter-spacing: -0.025em; padding-bottom: 0.18em; margin-bottom: 2.5rem;">
+                    is character.
+                </div>
+                <p class="pull-quote text-ink/55 mb-16">
+                    The fact that you notice the disconnection means the part of you that knows why you chose a life of service is still awake.
+                </p>
+
+                <div class="space-y-12">
+                    <div class="cell flex gap-8 group">
+                        <div class="flex-shrink-0 w-20 h-20 glass rounded-2xl flex items-center justify-center">
+                            <svg class="w-9 h-9 text-primary group-hover:rotate-180 transition-transform duration-1000" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+                                <circle cx="12" cy="12" r="9" stroke-dasharray="2 2"/>
+                                <path d="M12 7v5l3 3"/>
+                                <path d="M12 3v2M12 19v2M3 12h2M19 12h2" opacity="0.5"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h4 class="hero-display text-ink mb-3 uppercase" style="font-size: 1.5rem;">The Compass of Presence</h4>
+                            <p class="hero-serif text-ink/55" style="font-size: 1rem; line-height: 1.55;">"Stop building paths for a system that rewards speed. Build a compass for the presence you must protect."</p>
+                        </div>
+                    </div>
+                    <div class="cell flex gap-8 group">
+                        <div class="flex-shrink-0 w-20 h-20 glass rounded-2xl flex items-center justify-center">
+                            <svg class="w-9 h-9 text-primary group-hover:scale-110 transition-transform duration-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+                                <path d="M7 11V7a5 5 0 0110 0v4" opacity="0.4"/>
+                                <rect x="5" y="11" width="14" height="10" rx="2"/>
+                                <circle cx="12" cy="16" r="1.5"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h4 class="hero-display text-ink mb-3 uppercase" style="font-size: 1.5rem;">The Gravity of Transaction</h4>
+                            <p class="hero-serif text-ink/55" style="font-size: 1rem; line-height: 1.55;">"Don't waste momentum fighting administrative gravity. Your interaction is a prototype of character."</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Drift domain panel -->
+            <div class="cell float-c glass rounded-[2.5rem] p-12 md:p-16">
+                <div class="text-[12px] font-bold text-primary uppercase tracking-[0.55em] mb-12 text-center pb-4 border-b border-primary/15">
+                    Where is the drift loudest?
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="domain-chip p-8 rounded-2xl bg-bone/40 border border-primary/10 text-center cursor-pointer">
+                        <div class="text-[11px] font-bold uppercase tracking-[0.32em] text-ink/65">One-on-Ones</div>
+                    </div>
+                    <div class="domain-chip p-8 rounded-2xl bg-bone/40 border border-primary/10 text-center cursor-pointer">
+                        <div class="text-[11px] font-bold uppercase tracking-[0.32em] text-ink/65">Daily Rounds</div>
+                    </div>
+                    <div class="domain-chip p-8 rounded-2xl bg-bone/40 border border-primary/10 text-center cursor-pointer">
+                        <div class="text-[11px] font-bold uppercase tracking-[0.32em] text-ink/65">Team Cohesion</div>
+                    </div>
+                    <div class="domain-chip p-8 rounded-2xl bg-bone/40 border border-primary/10 text-center cursor-pointer">
+                        <div class="text-[11px] font-bold uppercase tracking-[0.32em] text-ink/65">Self-Respect</div>
+                    </div>
+                    <div class="domain-chip p-8 rounded-2xl bg-bone/40 border border-primary/10 text-center cursor-pointer">
+                        <div class="text-[11px] font-bold uppercase tracking-[0.32em] text-ink/65">Integrity</div>
+                    </div>
+                    <div class="domain-chip p-8 rounded-2xl bg-bone/40 border border-primary/10 text-center cursor-pointer">
+                        <div class="text-[11px] font-bold uppercase tracking-[0.32em] text-ink/65">Hospitality</div>
+                    </div>
+                </div>
+                <div class="mt-12 pt-8 border-t border-primary/10 text-center">
+                    <p class="text-[12px] text-ink/40 font-bold tracking-[0.5em] uppercase">Humanity is the Ultimate Act of Leadership</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════
+         04 — THE CLOSE — dark, immersive, the title takes the room
+    ════════════════════════════════════════════════════════════ -->
+    <section id="close" class="relative py-48 overflow-hidden section-dark">
+        <div class="drift-stage dark" aria-hidden="true">
+            <div class="fog-blob fog-1"></div>
+            <div class="fog-blob fog-2"></div>
+            <div class="fog-blob fog-3"></div>
+            <div class="fog-blob fog-4"></div>
+        </div>
+
+        <div class="relative z-10 max-w-5xl mx-auto px-8 text-center">
+            <h2 class="hero-display kinetic" style="font-size: clamp(3rem, 11vw, 9rem); line-height: 0.95; margin-bottom: 0.4rem;">
+                The Quiet
+            </h2>
+            <h2 class="text-primary mb-16" style="font-family:'Fraunces',serif;font-style:italic;font-weight:300;font-size: clamp(2.6rem, 9.5vw, 7.5rem); line-height: 1.05; letter-spacing: -0.025em; padding-bottom: 0.18em;">
+                Line<span class="text-primary">.</span>
+            </h2>
+
+            <p class="hero-serif text-bone/55 mb-24 max-w-3xl mx-auto" style="font-size: clamp(1.1rem, 1.7vw, 1.6rem); line-height: 1.55;">
+                In every hallway, every meeting, and every interaction, drift has a preceding moment of awareness. A flicker. A hesitation.
+                <br/>
+                <span class="text-bone italic">This lecture is about reclaiming that flicker.</span>
+            </p>
+
+            <div class="cell glass-dark p-14 md:p-20 rounded-[3rem] mb-24">
+                <p class="hero-serif text-bone mb-12" style="font-size: clamp(1.6rem, 3.5vw, 3rem); line-height: 1.2;">
+                    "What would I be doing in this interaction if I trusted my <span class="text-primary">humanity</span> completely?"
+                </p>
+                <div class="h-px w-32 bg-primary/40 mx-auto mb-8"></div>
+                <p class="text-[12px] uppercase tracking-[0.6em] text-bone/45 font-bold">Resonance is the cure. Establish the line.</p>
+            </div>
+
+            <div class="flex flex-col md:flex-row items-center justify-center gap-10">
+                <a href="#" id="reserveSeatBtn" class="available-now-btn px-14 py-6 rounded-sm text-white font-bold text-sm tracking-[0.3em] uppercase shadow-2xl">
+                    Reserve Your Seat
+                </a>
+                <a href="https://tristianwalker.com" target="_blank" class="text-primary hover:text-bone transition-all text-[12px] font-bold uppercase tracking-[0.55em] border-b border-primary/30 pb-1">
+                    Back to TristianWalker.com
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════
+         05 — BIBLIOGRAPHY
+    ════════════════════════════════════════════════════════════ -->
+    <section class="relative py-40 overflow-hidden section-light">
+        <div class="drift-stage" aria-hidden="true">
+            <div class="fog-blob fog-1"></div>
+            <div class="fog-blob fog-2"></div>
+            <div class="fog-blob fog-3"></div>
+        </div>
+
+        <div class="relative z-10 max-w-7xl mx-auto px-8">
+            <div class="mb-20 cell">
+                <div class="inline-flex items-center gap-3 mb-6 text-[12px] font-bold text-ink/40 uppercase tracking-[0.55em]">
+                    <span class="hairline"></span> The Dossier
+                </div>
+                <h2 class="hero-display text-ink" style="font-size: clamp(2.75rem, 6.5vw, 5.5rem); line-height: 0.95; margin-bottom: 0.4rem;">
+                    Research
+                </h2>
+                <div class="text-primary" style="font-family:'Fraunces',serif;font-style:italic;font-weight:300;font-size: clamp(2.4rem, 6vw, 5rem); line-height: 1.05; letter-spacing: -0.025em; padding-bottom: 0.18em;">
+                    foundation.
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-x-20 gap-y-8 text-[12px] leading-relaxed">
+                <div class="space-y-7">
+                    <div class="cell flex gap-6 items-start">
+                        <span class="hero-serif text-primary text-2xl flex-shrink-0">01.</span>
+                        <div><span class="font-bold text-ink uppercase tracking-[0.18em] text-[12px]">Scott A. Snook</span><br/><span class="hero-serif text-ink/60">Friendly Fire</span> — Defining Practical Drift and normalization of deviance.</div>
+                    </div>
+                    <div class="cell flex gap-6 items-start">
+                        <span class="hero-serif text-primary text-2xl flex-shrink-0">02.</span>
+                        <div><span class="font-bold text-ink uppercase tracking-[0.18em] text-[12px]">Burnett &amp; Evans</span><br/><span class="hero-serif text-ink/60">Designing Your Life</span> — Prototyping and the Gravity Problem.</div>
+                    </div>
+                    <div class="cell flex gap-6 items-start">
+                        <span class="hero-serif text-primary text-2xl flex-shrink-0">03.</span>
+                        <div><span class="font-bold text-ink uppercase tracking-[0.18em] text-[12px]">Hyatt &amp; Harkavy</span><br/><span class="hero-serif text-ink/60">Living Forward</span> — Reactive drift and the 7 Life Domains.</div>
+                    </div>
+                    <div class="cell flex gap-6 items-start">
+                        <span class="hero-serif text-primary text-2xl flex-shrink-0">04.</span>
+                        <div><span class="font-bold text-ink uppercase tracking-[0.18em] text-[12px]">Junko Okada</span><br/><span class="hero-serif text-ink/60">The Success Trap</span> — Achievement as a potential cage for identity.</div>
+                    </div>
+                </div>
+                <div class="space-y-7">
+                    <div class="cell flex gap-6 items-start">
+                        <span class="hero-serif text-primary text-2xl flex-shrink-0">05.</span>
+                        <div><span class="font-bold text-ink uppercase tracking-[0.18em] text-[12px]">Julia Christina</span><br/><span class="hero-serif text-ink/60">Values Compass</span> — Shift from destination-mapping to value-alignment.</div>
+                    </div>
+                    <div class="cell flex gap-6 items-start">
+                        <span class="hero-serif text-primary text-2xl flex-shrink-0">06.</span>
+                        <div><span class="font-bold text-ink uppercase tracking-[0.18em] text-[12px]">Jen Green</span><br/><span class="hero-serif text-ink/60">Evolutionary Scope</span> — Drift as data for intentional momentum redirection.</div>
+                    </div>
+                    <div class="cell flex gap-6 items-start">
+                        <span class="hero-serif text-primary text-2xl flex-shrink-0">07.</span>
+                        <div><span class="font-bold text-ink uppercase tracking-[0.18em] text-[12px]">Systems Theory</span><br/><span class="hero-serif text-ink/60">Concept Drift</span> — Parallels between data decay and strategic misalignment.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════
+         FOOTER
+    ════════════════════════════════════════════════════════════ -->
+    <footer class="relative py-20 border-t border-primary/15 text-center bg-bone z-10">
+        <div class="mb-10">
+            <div class="text-xl logo-text font-black tracking-tighter text-ink uppercase">
+                Professional Drift
+                <span class="text-primary italic font-normal mx-2">|</span>
+                <span class="text-primary italic font-normal">The Quiet Line</span>
+            </div>
+            <div class="mt-6 flex justify-center gap-10 text-[11px] font-bold uppercase tracking-[0.45em] text-ink/40">
+                <a href="/" class="hover:text-primary transition-colors">walkertalks.io</a>
+                <a href="https://tristianwalker.com" target="_blank" class="hover:text-primary transition-colors">tristianwalker.com</a>
+            </div>
+        </div>
+        <p class="text-[11px] font-bold text-ink/25 tracking-[0.7em] uppercase">© 2026 Tristian Walker Ecosystem</p>
+    </footer>
+
+    <script>
+        // ─── INTERSECTION REVEAL FOR CELLS ──────────────────────────
+        const cellObserver = new IntersectionObserver((entries) => {
+            entries.forEach((entry, i) => {
+                if (entry.isIntersecting) {
+                    // Stagger reveals so neighbors don't pop in unison
+                    const delay = (i % 5) * 90;
+                    setTimeout(() => entry.target.classList.add('in'), delay);
+                    cellObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.08, rootMargin: '0px 0px -8% 0px' });
+        document.querySelectorAll('.cell').forEach(el => cellObserver.observe(el));
+
+        // ─── NAV SCROLL BEHAVIOR ─────────────────────────────────────
+        const nav = document.getElementById('mainNav');
+        const logoQuiet = document.getElementById('logoQuiet');
+        let lastScrollY = 0;
+        function onScroll() {
+            const y = window.scrollY;
+            if (y > 60) {
+                nav.classList.add('nav-scrolled');
+                nav.querySelectorAll('a:not(.available-now-btn)').forEach(a => {
+                    if (!a.classList.contains('text-primary')) a.style.color = '#0F0E0D';
+                });
+                if (logoQuiet) logoQuiet.style.color = '#0F0E0D';
+            } else {
+                nav.classList.remove('nav-scrolled');
+                nav.querySelectorAll('a:not(.available-now-btn)').forEach(a => {
+                    if (!a.classList.contains('text-primary')) a.style.color = '';
+                });
+                if (logoQuiet) logoQuiet.style.color = '';
+            }
+            lastScrollY = y;
+        }
+        window.addEventListener('scroll', onScroll, { passive: true });
+        onScroll();
+
+        // ─── CURSOR FOG (mouse follower, lazy — armed on first move) ─
+        // Skip on touch devices, reduced-motion, and small viewports. Don't
+        // start the rAF loop until the user actually moves the pointer; saves
+        // a continuous animation frame on idle desktop loads.
+        (function(){
+            const cursorFog = document.getElementById('cursorFog');
+            if (!cursorFog) return;
+            const ok = !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+                    && !window.matchMedia('(hover: none)').matches
+                    && window.innerWidth > 768;
+            if (!ok) return;
+            let mx = window.innerWidth / 2, my = window.innerHeight / 2;
+            let cx = mx, cy = my, running = false;
+            function tick(){
+                cx += (mx - cx) * 0.08;
+                cy += (my - cy) * 0.08;
+                cursorFog.style.transform = `translate(${cx}px, ${cy}px) translate(-50%, -50%)`;
+                requestAnimationFrame(tick);
+            }
+            window.addEventListener('mousemove', (e) => {
+                mx = e.clientX; my = e.clientY;
+                if (!running) {
+                    running = true;
+                    document.body.classList.add('has-cursor');
+                    requestAnimationFrame(tick);
+                }
+            }, { passive: true });
+            window.addEventListener('mouseleave', () => document.body.classList.remove('has-cursor'));
+            window.addEventListener('mouseenter', () => document.body.classList.add('has-cursor'));
+        })();
+
+        // ─── DOMAIN CHIP RADIAL HOVER ───────────────────────────────
+        document.querySelectorAll('.domain-chip').forEach(chip => {
+            chip.addEventListener('mousemove', (e) => {
+                const r = chip.getBoundingClientRect();
+                chip.style.setProperty('--mx', `${e.clientX - r.left}px`);
+                chip.style.setProperty('--my', `${e.clientY - r.top}px`);
+            });
+        });
+
+        // ─── AUDIO PLAYER (teaser narration: Brian VO + drone) ───────
+        // Icons + now-playing stage are driven from <audio> events
+        // (not from click handlers) so state never desyncs.
+        (function(){
+            const audio = document.getElementById('mainAudio');
+            const playIcon = document.getElementById('playIcon');
+            const pauseIcon = document.getElementById('pauseIcon');
+            const progressBar = document.getElementById('audioProgress');
+            const audioTimer = document.getElementById('audioTimer');
+            const toggle = document.getElementById('audioToggle');
+            const npStage = document.getElementById('npStage');
+            const npCaps = npStage ? npStage.querySelectorAll('[data-cap]') : [];
+
+            // Caption schedule (seconds) — v6 build with new closing byline:
+            // "The Quiet Line, a lecture by Tristian Walker." Same v5
+            // cleaning pipeline (silence-trimmed + fades, gentle duck).
+            // Total runtime 28.18s.
+            const SCHEDULE = [
+                { idx: 0, start:  0.35, end:  3.60 },   // "In every interaction…"
+                { idx: 1, start:  3.45, end:  6.51 },   // "Between presence and process."
+                { idx: 2, start:  6.38, end: 10.23 },   // "…character drifts."
+                { idx: 3, start: 10.13, end: 14.14 },   // "Most never notice. The few who do — take action."
+                { idx: 4, start: 14.07, end: 19.37 },   // "For those who've drifted — numb to what could still be."
+                { idx: 5, start: 19.24, end: 24.72 },   // "Join me. Explore the possibilities of you."
+                { idx: 6, start: 24.67, end: 27.83 }    // Title card: "The Quiet Line, a lecture by Tristian Walker."
+            ];
+
+            function fmtTime(t, total) {
+                const mm = (n) => Math.floor(Math.max(0, n) % 60).toString().padStart(2, '0');
+                const m  = (n) => Math.floor(Math.max(0, n) / 60);
+                return `${m(t)}:${mm(t)} / ${m(total)}:${mm(total)}`;
+            }
+            function setCapsForTime(t){
+                if (!npCaps.length) return;
+                SCHEDULE.forEach(cue => {
+                    const el = npCaps[cue.idx];
+                    if (!el) return;
+                    el.classList.toggle('show', t >= cue.start && t < cue.end);
+                });
+            }
+            function clearCaps(){ npCaps.forEach(el => el.classList.remove('show')); }
+
+            // CLICK = pure toggle. Don't touch icons here — let events do it.
+            toggle.addEventListener('click', () => {
+                if (audio.paused) audio.play().catch(() => {});
+                else audio.pause();
+            });
+
+            audio.addEventListener('play', () => {
+                playIcon.classList.add('hidden');
+                pauseIcon.classList.remove('hidden');
+                if (npStage) { npStage.classList.add('show'); npStage.setAttribute('aria-hidden', 'false'); }
+            });
+            audio.addEventListener('pause', () => {
+                playIcon.classList.remove('hidden');
+                pauseIcon.classList.add('hidden');
+                if (npStage && (audio.ended || audio.currentTime === 0)) {
+                    npStage.classList.remove('show');
+                    npStage.setAttribute('aria-hidden', 'true');
+                    clearCaps();
+                }
+            });
+            audio.addEventListener('ended', () => {
+                progressBar.style.width = '0%';
+                if (audioTimer) audioTimer.textContent = fmtTime(0, audio.duration || 45);
+                if (npStage) {
+                    npStage.classList.remove('show');
+                    npStage.setAttribute('aria-hidden', 'true');
+                }
+                clearCaps();
+            });
+            audio.addEventListener('timeupdate', () => {
+                const t = audio.currentTime || 0;
+                const dur = audio.duration || 45;
+                progressBar.style.width = ((t / dur) * 100) + '%';
+                if (audioTimer) audioTimer.textContent = fmtTime(t, dur);
+                setCapsForTime(t);
+            });
+            audio.addEventListener('loadedmetadata', () => {
+                if (audioTimer) audioTimer.textContent = fmtTime(0, audio.duration || 45);
+            });
+            audio.addEventListener('error', (e) => {
+                console.warn('Audio error', audio.error);
+            });
+        })();
+
+        // ─── KIT EMAIL CAPTURE ───────────────────────────────────────
+        async function subscribeEmail(email, formEl, wrapperEl) {
+            const submitBtn = formEl.querySelector('button[type="submit"]');
+            submitBtn.classList.add('btn-loading');
+            submitBtn.textContent = 'Joining...';
+            try {
+                const res = await fetch('/api/subscribe', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    wrapperEl.innerHTML = `<div class="form-success"><p>You're in. Check your inbox.</p></div>`;
+                } else {
+                    submitBtn.classList.remove('btn-loading');
+                    submitBtn.textContent = 'Join';
+                    alert(data.error || 'Something went wrong. Please try again.');
+                }
+            } catch (err) {
+                submitBtn.classList.remove('btn-loading');
+                submitBtn.textContent = 'Join';
+                alert('Something went wrong. Please try again.');
+            }
+        }
+        document.getElementById('leadFormHero').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('heroEmail').value;
+            await subscribeEmail(email, this, document.getElementById('heroFormWrapper'));
+        });
+
+        // ─── RESERVE YOUR SEAT ───────────────────────────────────────
+        // Replace '#' with your lecture URL when it's live
+        // e.g. document.getElementById('reserveSeatBtn').href = 'https://your-lecture-url.com';
+
+        // ─── MOBILE MENU ─────────────────────────────────────────────
+        (function(){
+            const toggle = document.getElementById('mobileMenuToggle');
+            const menu = document.getElementById('mobileMenu');
+            if (!toggle || !menu) return;
+            function setOpen(open){
+                toggle.classList.toggle('open', open);
+                menu.classList.toggle('show', open);
+                toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+                menu.setAttribute('aria-hidden', open ? 'false' : 'true');
+                document.body.style.overflow = open ? 'hidden' : '';
+            }
+            toggle.addEventListener('click', () => setOpen(!menu.classList.contains('show')));
+            menu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => setOpen(false)));
+            document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setOpen(false); });
+        })();
+
+    </script>
+</body>
+</html>
