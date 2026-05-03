@@ -25,6 +25,7 @@
                             { "key": "Accept-Ranges", "value": "bytes" }
                   ]
           }
+        
     ],
     "redirects": [
           { "source": "/lecture", "destination": "/professional-drift/", "permanent": true },
