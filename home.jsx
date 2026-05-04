@@ -12,7 +12,7 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "headlineFamily": "anton",
   "showResidency": true,
   "portraitTreatment": "framed",
-  "portraitImage": "hero",
+  "portraitImage": "studio",
   "density": "regular"
 }/*EDITMODE-END*/;
 
@@ -503,7 +503,7 @@ function AboutSnippet({ tweaks }) {
               boxShadow: '0 50px 100px -25px rgba(0,0,0,0.7)',
               border: '1px solid rgba(196,164,132,0.18)',
             }}>
-              <img src={PORTRAITS.about} alt="Tristian Walker portrait"
+              <img src={PORTRAITS.studio} alt="Tristian Walker portrait"
                 style={{width: '100%', height: '100%', objectFit: 'cover'}} />
               <div style={{
                 position: 'absolute', bottom: 16, left: 16, right: 16,
